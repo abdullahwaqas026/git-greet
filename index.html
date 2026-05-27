@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak - Dumpling Celebration</title>
+    <style>
+        /* Base Scene & Night Sky */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0d1b2a 0%, #756e0f 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        body.yes{
+            background: linear-gradient(180deg, #e9eb98 0%, #eb972b 100%);
+        }
+        
+        .mainText{
+            text-align: center;
+        }
+        /* Container to center all elements */
+        .container {
+              text-align: center;
+            position: absolute;
+            bottom: 30%; 
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* --- BACKGROUND ELEMENTS --- */
+        .mountains {
+            position: absolute;
+            bottom: 30%;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .mountain {
+            position: absolute;
+            background: #2a4d3c;
+            border-top: 3px solid #66af8d;
+            transform: rotate(45deg);
+            opacity: 0.8;
+        }
+
+        .mountain-1 { width: 400px; height: 400px; left: -100px; bottom: -150px; }
+        .mountain-2 { width: 350px; height: 350px; left: 15%; bottom: -180px; }
+        .mountain-3 { width: 450px; height: 450px; right: 20%; bottom: -160px; }
+        .mountain-4 { width: 380px; height: 380px; right: -80px; bottom: -190px; }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background-color: #302f2e;
+            z-index: 2;
+        }
+
+        .ground {
+    /* ... your existing styles ... */
+    transition: background-color 1.5s ease-in-out; /* Makes the change smooth */
+        }
+
+        .ground.changed {
+    background-color: #776565; /* Your new ground color */
+        }
+
+        /* --- GREETING TEXT --- */
+        h1 {
+            font-size: 3.5rem;
+            color: #c28cce;
+            text-shadow: 0 0 15px rgba(185, 169, 183, 0.397);
+            opacity: 0;
+            transform: translateY(-250px);
+            transition: all 1.5s ease-in-out;
+            margin: 0;
+        }
+
+        h1.show {
+            opacity: 1;
+            transform: translateY(-100);
+        }
+        h2{
+            position: relative;
+            font-size: 2.5rem;
+            color: #4c3e50;
+            opacity: 0;
+            transform: translateY(-250px);
+            transition: all 1.5s ease-in-out;
+            margin: 0;
+            z-index: 9;
+        }
+        h2.show {
+            opacity: 1;
+            transform: translateY(-100);
+        }
+
+        /* --- DUMPLING SCENE --- */
+        .scene-group {
+            position: relative;
+            cursor: pointer;
+            width: 250px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Dumpling stands on the ground base */
+        }
+
+        .dumpling {
+            position: relative;
+            top: 21px;
+            width: 120px;
+            height: 100px;
+            background-color: #fdfae6;
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+            z-index: 4;
+        }
+
+        .scene-group:hover .dumpling {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .dumpling-face {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .eye { width: 8px; height: 8px; background-color: #333; border-radius: 50%; }
+        
+        .blush { 
+            position: absolute;
+            top: 45%;
+            left: 15px;
+            width: 12px;
+            height: 8px;
+            background-color: #ffb3b3;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            box-shadow: 78px 0 0 #ffb3b3; /* Creates the second cheek automatically */
+        }
+        .blush.show { opacity: 1; }
+
+        .hand {
+            position: absolute;
+            width: 20px;
+            height: 12px;
+            background-color: #fdfae6;
+            border-radius: 20px;
+            bottom: 15px;
+            z-index: 5;
+        }
+        .hand.left { left: -5px; transform: rotate(-20deg); }
+        .hand.right { right: -5px; transform: rotate(20deg); }
+
+        /* --- FIXED STEAM VAPOR --- */
+        .steam {
+            position: absolute;
+            /* Positioned precisely right above the dumpling's head */
+            top: 180px; 
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            filter: blur(5px);
+            opacity: 1;
+            pointer-events: none;
+            z-index: 3;
+            transition: transform 1.5s ease-out, top 1.5s ease-out, opacity 1.5s ease-out;
+        }
+
+        /* Triggers the rising, growing, and fading out naturally */
+        .steam.grow {
+            transform: translateX(-50%) scale(4.5);
+            top: 80px;
+            opacity: 0;
+        }
+        /* steam growing */
+        .baby-stem {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2.5px;
+            height: 0px; /* Starts hidden */
+            background-color: #4caf50;
+            border-radius: 1px;
+            /* Combines normal transition physics with structural delays below */
+            transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+         .ground-flowers.visible .baby-flower .baby-stem {
+            height: 30px; /* Stem grows up 25px */
+        }
+        .baby-head {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 1px;
+            transition: bottom 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ground-flowers.visible .baby-flower .baby-head {
+            bottom: 30px; /* Moves up to match the top of the growing stem */
+        }
+
+        
+
+        .flower-container.bloom .petal {
+            transform: translateX(-50%) scale(1) rotate(var(--angle));
+        }
+         .ground-flowers {
+            position: absolute;
+            bottom: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500%; /* Covers base width */
+            height: 60px; /* Height the baby flowers reach */
+            pointer-events: none;
+            z-index: -3; /* Below dumpling, above mountains */
+        }
+
+        /* A container for each single baby flower */
+        .baby-flower {
+            position: absolute;
+            bottom: -5px; /* Starts just below surface */
+            transform-origin: bottom center;
+            transform: scale(0); /* Initially hidden */
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Blooms up from the ground */
+        .ground-flowers.visible .baby-flower {
+            transform: scale(1);
+            bottom: -24px;
+        }
+
+        /* Positioning the 6 flowers on the ground */
+        .flower-g1 { left: 5%; bottom: 5px; transition-delay: 0.1s; }
+        .flower-g2 { left: 15%; bottom: 10px; transition-delay: 0.2s; }
+        .flower-g3 { left: 25%; bottom: 5px; transition-delay: 0.3s; }
+        .flower-g4 { right: 25%; bottom: 5px; transition-delay: 0.3s; }
+        .flower-g5 { right: 15%; bottom: 10px; transition-delay: 0.2s; }
+        .flower-g6 { right: 5%; bottom: 5px; transition-delay: 0.1s; }
+
+        /* The structure of each baby flower head (scaled down significantly) */
+        .baby-head {
+            position: relative;
+            width: 1px;
+            height: 1px;
+        }
+
+        /* Baby flower core (tiny) */
+        .baby-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #ffe066, #d4af37);
+            border-radius: 50%;
+            box-shadow: 0 0 2px rgba(214, 175, 55, 0.8);
+            z-index: 2;
+        }
+
+        /* Baby flower petal (tiny) */
+        .baby-petal {
+            position: absolute;
+            width: 6px;
+            height: 12px;
+            background: linear-gradient(to top, #ff758c 0%, #ff7eb3 100%);
+            border-radius: 50% 50% 20% 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0; 
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(var(--angle));
+            z-index: 2;
+        }
+    </style>
+</head>
+<body id="changing">
+
+    <div class="mountains">
+        <div class="mountain mountain-1"></div>
+        <div class="mountain mountain-2"></div>
+        <div class="mountain mountain-3"></div>
+        <div class="mountain mountain-4"></div>
+    </div>
+    <div class="ground" id=""></div>
+    <div class="mainText">
+    <h1 id="greeting">Eid Mubarak</h1>
+    <h2 id="greeting2">May Allah grant you Afiyah in this world and the next, and may He accept every single one of your secret prayers.</h2>
+    </div>
+    
+    <div class="container">
+        
+       
+        
+        <div class="scene-group" id="dumplingScene">
+            
+            <div class="steam" id="dumplingSteam"></div>
+
+            <div class="flower-container" id="bloomFlower">
+              
+            </div>
+
+            <div class="dumpling">
+                <div class="dumpling-face">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <div class="blush" id="dumplingBlush"></div>
+                
+                <div class="hand left"></div>
+                <div class="hand right"></div>
+            </div>
+            <div class="ground-flowers" id="groundFlowers">
+            
+            <div class="baby-flower flower-g1">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                  
+                   
+                </div>
+            </div>
+            
+            <div class="baby-flower flower-g2">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                </div>
+            </div>
+            
+            <div class="baby-flower flower-g3">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                </div>
+            </div>
+            
+            <div class="baby-flower flower-g4">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                </div>
+            </div>
+            
+            <div class="baby-flower flower-g5">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                </div>
+            </div>
+            
+            <div class="baby-flower flower-g6">
+                 <div class="baby-stem"></div>
+                <div class="baby-head">
+                    <div class="baby-center"></div>
+                    <div class="baby-petal" style="--angle: 0deg;"></div>
+                    <div class="baby-petal" style="--angle: 90deg;"></div>
+                    <div class="baby-petal" style="--angle: 180deg;"></div>
+                    <div class="baby-petal" style="--angle: 270deg;"></div>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const scene = document.getElementById('dumplingScene');
+        const steam = document.getElementById('dumplingSteam');
+        const backChange = document.getElementById('changing')
+        const greeting = document.getElementById('greeting');
+        const greeting2 = document.getElementById('greeting2');
+        const blush = document.getElementById('dumplingBlush');
+        const groundFlowers = document.getElementById('groundFlowers'); 
+        const groundElement = document.querySelector('.ground');
+        
+
+        scene.addEventListener('click', () => {
+            // Trigger animations via CSS classes instantly
+            steam.classList.add('grow');
+            blush.classList.add('show');
+            greeting.classList.add('show');
+            greeting2.classList.add('show');
+            groundFlowers.classList.add('visible');
+            groundElement.classList.add('changed');
+            backChange.classList.toggle('yes')
+
+            // Make the scene un-clickable after activation
+            scene.style.pointerEvents = 'none';
+        });
+    </script>
+</body>
+</html>
